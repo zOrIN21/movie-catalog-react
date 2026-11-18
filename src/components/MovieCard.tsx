@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import type { MovieShort, MovieType } from '../types';
 
 const TYPE_LABELS: Record<MovieType, string> = {
@@ -12,16 +13,19 @@ type MovieCardProps = {
 };
 
 export function MovieCard({ movie }: MovieCardProps) {
-  const hasPoster = movie.Poster !== 'N/A';
+  // OMDb иногда отдаёт ссылку на постер, который уже не открывается
+  const [posterFailed, setPosterFailed] = useState(false);
+  const showPoster = movie.Poster !== 'N/A' && !posterFailed;
 
   return (
     <article className="movie-card">
-      {hasPoster ? (
+      {showPoster ? (
         <img
           className="movie-card__poster"
           src={movie.Poster}
           alt={`Постер: ${movie.Title}`}
           loading="lazy"
+          onError={() => setPosterFailed(true)}
         />
       ) : (
         <div className="movie-card__poster movie-card__poster--empty">Нет постера</div>
