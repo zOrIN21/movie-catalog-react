@@ -1,75 +1,28 @@
-# React + TypeScript + Vite
+# Каталог фильмов на React
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+React-версия моего [каталога фильмов на TypeScript](https://github.com/zOrIN21/movie-catalog-ts). Переношу проект с ручной работы с DOM на компоненты и хуки.
 
-Currently, two official plugins are available:
+## Что уже работает
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- Поиск фильмов через [OMDb API](https://www.omdbapi.com/) с фильтрами по типу и году
+- Состояния загрузки, ошибки с кнопкой «Повторить» и пустой выдачи
+- Отмена устаревшего запроса через AbortController, если запустить новый поиск до ответа
+- Адаптивная сетка карточек
 
-## React Compiler
+## Стек
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+React, TypeScript, Vite
 
-## Expanding the ESLint configuration
+## Как запустить
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+1. `npm install`
+2. Скопируйте `.env.example` в `.env.local` и вставьте свой ключ OMDb (получить бесплатно: https://www.omdbapi.com/apikey.aspx)
+3. `npm run dev`
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## Планы
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-
-```
-
-You can also install [eslint-plugin-react-x](https://npmx.dev/package/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://npmx.dev/package/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-
-```
+- [ ] Страница фильма через React Router
+- [ ] Избранное через Context с сохранением в localStorage
+- [ ] Поиск при вводе с debounce
+- [ ] Пагинация
+- [ ] Деплой на GitHub Pages
