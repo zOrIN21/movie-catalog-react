@@ -1,0 +1,61 @@
+# Сборка и публикация на GitHub Pages при каждом push в main
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: ['main']
+  # Позволяет запустить деплой вручную со вкладки Actions
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Если запустился новый деплой, предыдущий отменяется
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Set up Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: lts/*
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+        env:
+          # Ключ OMDb берётся из секретов репозитория
+          VITE_OMDB_API_KEY: ${{ secrets.VITE_OMDB_API_KEY }}
+
+      # GitHub Pages не знает о клиентском роутинге: на прямой заход по адресу
+      # вроде /movie/tt0133093 он отдаёт 404.html. Копия index.html под этим
+      # именем загружает приложение, а дальше маршрут обрабатывает React Router.
+      - name: SPA fallback for client-side routing
+        run: cp dist/index.html dist/404.html
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v6
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: ./dist
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v5
