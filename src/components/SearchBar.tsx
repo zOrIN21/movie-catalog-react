@@ -3,6 +3,8 @@ import type { SearchParams, TypeFilter } from '../types';
 
 type SearchBarProps = {
   onSearch: (params: SearchParams) => void;
+  // Поля последнего поиска: при возврате со страницы фильма форма не пустая
+  initialParams: SearchParams | null;
 };
 
 const TYPE_OPTIONS: { value: TypeFilter; label: string }[] = [
@@ -12,10 +14,10 @@ const TYPE_OPTIONS: { value: TypeFilter; label: string }[] = [
   { value: 'episode', label: 'Эпизоды' },
 ];
 
-export function SearchBar({ onSearch }: SearchBarProps) {
-  const [query, setQuery] = useState('');
-  const [type, setType] = useState<TypeFilter>('');
-  const [year, setYear] = useState('');
+export function SearchBar({ onSearch, initialParams }: SearchBarProps) {
+  const [query, setQuery] = useState(initialParams?.query ?? '');
+  const [type, setType] = useState<TypeFilter>(initialParams?.type ?? '');
+  const [year, setYear] = useState(initialParams?.year ?? '');
 
   const trimmedQuery = query.trim();
 

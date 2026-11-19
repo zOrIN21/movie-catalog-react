@@ -17,7 +17,26 @@ export type SearchParams = {
   year: string;
 };
 
+// Подробная информация о фильме (запрос по imdbID). Любое текстовое поле
+// может прийти как 'N/A', если данных нет.
+export type MovieDetails = MovieShort & {
+  Rated: string;
+  Released: string;
+  Runtime: string;
+  Genre: string;
+  Director: string;
+  Actors: string;
+  Plot: string;
+  Language: string;
+  Country: string;
+  imdbRating: string;
+};
+
+type OmdbError = { Response: 'False'; Error: string };
+
 // OMDb всегда отвечает статусом 200, а успех или ошибку пишет в поле Response
 export type OmdbSearchResponse =
   | { Response: 'True'; Search: MovieShort[]; totalResults: string }
-  | { Response: 'False'; Error: string };
+  | OmdbError;
+
+export type OmdbDetailsResponse = ({ Response: 'True' } & MovieDetails) | OmdbError;

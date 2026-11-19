@@ -1,35 +1,16 @@
-import { useState } from 'react';
-import type { MovieShort, MovieType } from '../types';
-
-const TYPE_LABELS: Record<MovieType, string> = {
-  movie: 'Фильм',
-  series: 'Сериал',
-  episode: 'Эпизод',
-  game: 'Игра',
-};
+import { Link } from 'react-router';
+import type { MovieShort } from '../types';
+import { TYPE_LABELS } from '../labels';
+import { Poster } from './Poster';
 
 type MovieCardProps = {
   movie: MovieShort;
 };
 
 export function MovieCard({ movie }: MovieCardProps) {
-  // OMDb иногда отдаёт ссылку на постер, который уже не открывается
-  const [posterFailed, setPosterFailed] = useState(false);
-  const showPoster = movie.Poster !== 'N/A' && !posterFailed;
-
   return (
-    <article className="movie-card">
-      {showPoster ? (
-        <img
-          className="movie-card__poster"
-          src={movie.Poster}
-          alt={`Постер: ${movie.Title}`}
-          loading="lazy"
-          onError={() => setPosterFailed(true)}
-        />
-      ) : (
-        <div className="movie-card__poster movie-card__poster--empty">Нет постера</div>
-      )}
+    <Link className="movie-card" to={`/movie/${movie.imdbID}`}>
+      <Poster src={movie.Poster} title={movie.Title} />
 
       <div className="movie-card__body">
         <h3 className="movie-card__title">{movie.Title}</h3>
@@ -37,6 +18,6 @@ export function MovieCard({ movie }: MovieCardProps) {
           {movie.Year} · {TYPE_LABELS[movie.Type]}
         </p>
       </div>
-    </article>
+    </Link>
   );
 }
