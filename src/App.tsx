@@ -1,58 +1,40 @@
-import { MovieList } from './components/MovieList';
-import { SearchBar } from './components/SearchBar';
+import { Link, Route, Routes } from 'react-router';
 import { useMovieSearch } from './hooks/useMovieSearch';
-import type { SearchState } from './hooks/useMovieSearch';
+import { MoviePage } from './pages/MoviePage';
+import { NotFoundPage } from './pages/NotFoundPage';
+import { SearchPage } from './pages/SearchPage';
 import './App.css';
 
 export default function App() {
-  const { state, search, retry } = useMovieSearch();
+  // Состояние поиска живёт здесь, выше маршрутов: при переходе на страницу
+  // фильма и обратно результаты и поля формы не теряются
+  const { state, lastParams, search, retry } = useMovieSearch();
 
   return (
     <div className="app">
       <header className="app__header">
-        <h1 className="app__title">Каталог фильмов</h1>
-        <SearchBar onSearch={search} />
+        <h1 className="app__title">
+          <Link to="/">Каталог фильмов</Link>
+        </h1>
       </header>
 
       <main>
-        <SearchResults state={state} onRetry={retry} />
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <SearchPage
+                state={state}
+                lastParams={lastParams}
+                onSearch={search}
+                onRetry={retry}
+              />
+            }
+          />
+          <Route path="/movie/:id" element={<MoviePage />} />
+          <Route path="*" element={<NotFoundPage />} />
+        </Routes>
       </main>
     </div>
   );
-}
-
-type SearchResultsProps = {
-  state: SearchState;
-  onRetry: () => void;
-};
-
-function SearchResults({ state, onRetry }: SearchResultsProps) {
-  switch (state.status) {
-    case 'idle':
-      return <p className="message">Введите название фильма, чтобы начать поиск.</p>;
-
-    case 'loading':
-      return <p className="message">Загружаем фильмы…</p>;
-
-    case 'error':
-      return (
-        <div className="message message--error" role="alert">
-          <p>Не удалось загрузить фильмы: {state.message}</p>
-          <button type="button" onClick={onRetry}>
-            Повторить
-          </button>
-        </div>
-      );
-
-    case 'success':
-      if (state.movies.length === 0) {
-        return <p className="message">Ничего не найдено. Попробуйте изменить запрос или фильтры.</p>;
-      }
-      return (
-        <>
-          <p className="results-count">Найдено: {state.total}</p>
-          <MovieList movies={state.movies} />
-        </>
-      );
-  }
 }

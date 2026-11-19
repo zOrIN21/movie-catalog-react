@@ -12,8 +12,10 @@ export type SearchState =
 
 export function useMovieSearch() {
   const [state, setState] = useState<SearchState>({ status: 'idle' });
+  // Последний запрос храним в state, а не в ref: по нему SearchBar
+  // восстанавливает поля, когда пользователь возвращается со страницы фильма
+  const [lastParams, setLastParams] = useState<SearchParams | null>(null);
   const controllerRef = useRef<AbortController | null>(null);
-  const lastParamsRef = useRef<SearchParams | null>(null);
 
   const search = useCallback(async (params: SearchParams) => {
     // Новый поиск отменяет предыдущий запрос, чтобы старый ответ
@@ -21,8 +23,8 @@ export function useMovieSearch() {
     controllerRef.current?.abort();
     const controller = new AbortController();
     controllerRef.current = controller;
-    lastParamsRef.current = params;
 
+    setLastParams(params);
     setState({ status: 'loading' });
 
     try {
@@ -36,10 +38,10 @@ export function useMovieSearch() {
   }, []);
 
   const retry = useCallback(() => {
-    if (lastParamsRef.current) {
-      void search(lastParamsRef.current);
+    if (lastParams) {
+      void search(lastParams);
     }
-  }, [search]);
+  }, [lastParams, search]);
 
-  return { state, search, retry };
+  return { state, lastParams, search, retry };
 }
